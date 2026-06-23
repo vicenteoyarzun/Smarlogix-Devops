@@ -1,4 +1,4 @@
-# SmartLogix – Plataforma Inteligente de Gestión Logística eCommerce
+# SmartLogix – Plataforma Inteligente de Gestión Logística eCommerce.
 
 ## Descripción del Proyecto
 
