@@ -35,14 +35,21 @@ jobs:
         ECR_REGISTRY: ${{ secrets.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        services=("envios" "inventario" "pedidos" "usuario" "eureka")
-        for service in "${services[@]}"; do
+        declare -A services=(
+          ["envios"]="envios"
+          ["inventory"]="inventario"
+          ["pedidos"]="pedidos"
+          ["usuario"]="usuario"
+          ["eureka-server"]="eureka"
+        )
+        for folder in "${!services[@]}"; do
+          repo_name="${services[$folder]}"
           echo "========================================="
-          echo "Building smartlogix-$service..."
+          echo "Building smartlogix-$repo_name from Backend/$folder..."
           echo "========================================="
-          docker build -f "./Backend/Dockerfile" -t "$ECR_REGISTRY/smartlogix-$service:$IMAGE_TAG" "./Backend/$service"
-          docker push "$ECR_REGISTRY/smartlogix-$service:$IMAGE_TAG"
-          echo "✓ smartlogix-$service pushed successfully"
+          docker build -f "./Backend/Dockerfile" -t "$ECR_REGISTRY/smartlogix-$repo_name:$IMAGE_TAG" "./Backend/$folder"
+          docker push "$ECR_REGISTRY/smartlogix-$repo_name:$IMAGE_TAG"
+          echo "✓ smartlogix-$repo_name pushed successfully"
         done
 
     - name: Update Kubeconfig for EKS
