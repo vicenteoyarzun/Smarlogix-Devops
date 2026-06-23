@@ -32,14 +32,17 @@ jobs:
 
     - name: Build and Push microservices to ECR
       env:
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        ECR_REGISTRY: ${{ secrets.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        services=("envios" "inventario" "pedidos" "usuario")
+        services=("envios" "inventario" "pedidos" "usuario" "eureka")
         for service in "${services[@]}"; do
+          echo "========================================="
           echo "Building smartlogix-$service..."
-          docker build -t $ECR_REPOSITORY/smartlogix-$service:$IMAGE_TAG ./Backend/$service
-          docker push $ECR_REPOSITORY/smartlogix-$service:$IMAGE_TAG
+          echo "========================================="
+          docker build -t "$ECR_REGISTRY/smartlogix-$service:$IMAGE_TAG" "./Backend/$service"
+          docker push "$ECR_REGISTRY/smartlogix-$service:$IMAGE_TAG"
+          echo "✓ smartlogix-$service pushed successfully"
         done
 
     - name: Update Kubeconfig for EKS
@@ -48,9 +51,10 @@ jobs:
 
     - name: Deploy to EKS
       env:
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        ECR_REGISTRY: ${{ secrets.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
         sed -i "s|\${IMAGE_TAG}|$IMAGE_TAG|g" k8s/backend.yml
-        sed -i "s|ECR_REGISTRY|$ECR_REPOSITORY|g" k8s/backend.yml
+        sed -i "s|ECR_REGISTRY|$ECR_REGISTRY|g" k8s/backend.yml
         kubectl apply -f k8s/backend.yml
+        echo "✓ Deployment completed"
