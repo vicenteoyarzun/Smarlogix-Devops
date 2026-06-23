@@ -3,8 +3,8 @@ name: Build, Push and Deploy to EKS
 on:
   push:
     branches:
-      - features/devops
       - main
+      - features/devops
 
 env:
   AWS_REGION: us-east-1
@@ -18,29 +18,23 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 1. Autenticarse en AWS
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: ${{ env.AWS_REGION }}
 
-    # 2. Login en Amazon ECR
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    # 3. Build y Push de 4 microservicios
     - name: Build and Push microservices to ECR
       env:
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        # Array de microservicios
         services=("envios" "inventario" "pedidos" "usuario")
-
         for service in "${services[@]}"; do
           echo "Building smartlogix-$service..."
           docker build -t $ECR_REPOSITORY/smartlogix-$service:$IMAGE_TAG ./Backend
@@ -48,12 +42,10 @@ jobs:
           echo "✓ smartlogix-$service pushed successfully"
         done
 
-    # 4. Configurar kubectl para EKS
     - name: Update Kubeconfig for EKS
       run: |
         aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
 
-    # 5. Desplegar en EKS
     - name: Deploy to EKS
       env:
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
