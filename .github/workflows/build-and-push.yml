@@ -23,7 +23,8 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -39,7 +40,6 @@ jobs:
           echo "Building smartlogix-$service..."
           docker build -t $ECR_REPOSITORY/smartlogix-$service:$IMAGE_TAG ./Backend
           docker push $ECR_REPOSITORY/smartlogix-$service:$IMAGE_TAG
-          echo "✓ smartlogix-$service pushed successfully"
         done
 
     - name: Update Kubeconfig for EKS
@@ -54,4 +54,3 @@ jobs:
         sed -i "s|\${IMAGE_TAG}|$IMAGE_TAG|g" k8s/backend.yml
         sed -i "s|ECR_REGISTRY|$ECR_REPOSITORY|g" k8s/backend.yml
         kubectl apply -f k8s/backend.yml
-        echo "✓ Deployment completed"
