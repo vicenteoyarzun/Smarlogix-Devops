@@ -1,0 +1,174 @@
+# Deployment - smartlogix-usuario
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartlogix-usuario
+  labels:
+    app: smartlogix-usuario
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smartlogix-usuario
+  template:
+    metadata:
+      labels:
+        app: smartlogix-usuario
+    spec:
+      containers:
+      - name: smartlogix-usuario
+        image: ECR_REGISTRY/smartlogix-usuario:${IMAGE_TAG}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_APPLICATION_NAME
+          value: "usuario"
+        - name: SERVER_PORT
+          value: "8080"
+
+---
+# Service - smartlogix-usuario
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartlogix-usuario
+spec:
+  type: LoadBalancer
+  selector:
+    app: smartlogix-usuario
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+# Deployment - smartlogix-pedidos
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartlogix-pedidos
+  labels:
+    app: smartlogix-pedidos
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smartlogix-pedidos
+  template:
+    metadata:
+      labels:
+        app: smartlogix-pedidos
+    spec:
+      containers:
+      - name: smartlogix-pedidos
+        image: ECR_REGISTRY/smartlogix-pedidos:${IMAGE_TAG}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_APPLICATION_NAME
+          value: "pedidos"
+        - name: SERVER_PORT
+          value: "8080"
+
+---
+# Service - smartlogix-pedidos
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartlogix-pedidos
+spec:
+  type: ClusterIP
+  selector:
+    app: smartlogix-pedidos
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+# Deployment - smartlogix-inventario
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartlogix-inventario
+  labels:
+    app: smartlogix-inventario
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smartlogix-inventario
+  template:
+    metadata:
+      labels:
+        app: smartlogix-inventario
+    spec:
+      containers:
+      - name: smartlogix-inventario
+        image: ECR_REGISTRY/smartlogix-inventario:${IMAGE_TAG}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_APPLICATION_NAME
+          value: "inventario"
+        - name: SERVER_PORT
+          value: "8080"
+
+---
+# Service - smartlogix-inventario
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartlogix-inventario
+spec:
+  type: ClusterIP
+  selector:
+    app: smartlogix-inventario
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+# Deployment - smartlogix-envios
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartlogix-envios
+  labels:
+    app: smartlogix-envios
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smartlogix-envios
+  template:
+    metadata:
+      labels:
+        app: smartlogix-envios
+    spec:
+      containers:
+      - name: smartlogix-envios
+        image: ECR_REGISTRY/smartlogix-envios:${IMAGE_TAG}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_APPLICATION_NAME
+          value: "envios"
+        - name: SERVER_PORT
+          value: "8080"
+
+---
+# Service - smartlogix-envios
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartlogix-envios
+spec:
+  type: ClusterIP
+  selector:
+    app: smartlogix-envios
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
