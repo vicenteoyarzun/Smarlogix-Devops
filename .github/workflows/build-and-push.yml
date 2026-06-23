@@ -40,7 +40,7 @@ jobs:
           echo "========================================="
           echo "Building smartlogix-$service..."
           echo "========================================="
-          docker build -t "$ECR_REGISTRY/smartlogix-$service:$IMAGE_TAG" "./Backend/$service"
+          docker build -f "./Backend/Dockerfile" -t "$ECR_REGISTRY/smartlogix-$service:$IMAGE_TAG" "./Backend/$service"
           docker push "$ECR_REGISTRY/smartlogix-$service:$IMAGE_TAG"
           echo "✓ smartlogix-$service pushed successfully"
         done
