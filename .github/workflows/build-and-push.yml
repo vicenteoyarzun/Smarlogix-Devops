@@ -35,7 +35,7 @@ jobs:
         ECR_REGISTRY: ${{ secrets.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        services=("envios" "inventory" "pedidos" "usuario" "eureka-server")
+        services=("envios" "inventario" "pedidos" "usuario" "eureka")
         for service in "${services[@]}"; do
           echo "========================================="
           echo "Building smartlogix-$service..."
