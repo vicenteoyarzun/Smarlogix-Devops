@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  envios:
+    build:
+      context: .
+      dockerfile: ../Dockerfile.backend
+    container_name: smartlogix-envios
+    environment:
+      SPRING_APPLICATION_NAME: envios
+      SERVER_PORT: 8080
+    ports:
+      - "8084:8080"
+    networks:
+      - smartlogix-envios-net
+
+networks:
+  smartlogix-envios-net:
+    driver: bridge
